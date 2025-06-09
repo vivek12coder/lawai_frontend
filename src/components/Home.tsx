@@ -54,6 +54,7 @@ const Home: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    let animationFrameId: number;
     let particles: Array<{
       x: number;
       y: number;
@@ -65,11 +66,15 @@ const Home: React.FC = () => {
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      createParticles(); // Recreate particles when canvas is resized
     };
 
     const createParticles = () => {
       particles = [];
-      const numberOfParticles = Math.floor((canvas.width * canvas.height) / 15000);
+      const numberOfParticles = Math.min(
+        Math.floor((canvas.width * canvas.height) / 15000),
+        100 // Cap maximum particles
+      );
       
       for (let i = 0; i < numberOfParticles; i++) {
         particles.push({
@@ -82,64 +87,41 @@ const Home: React.FC = () => {
       }
     };
 
-    const drawParticles = () => {
+    const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'rgba(74, 144, 226, 0.3)';
-
-      particles.forEach((particle, i) => {
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Update position
+      
+      particles.forEach(particle => {
         particle.x += particle.dx;
         particle.y += particle.dy;
 
-        // Wrap around screen
+        // Wrap particles around screen edges
         if (particle.x < 0) particle.x = canvas.width;
         if (particle.x > canvas.width) particle.x = 0;
         if (particle.y < 0) particle.y = canvas.height;
         if (particle.y > canvas.height) particle.y = 0;
 
-        // Draw lines between nearby particles
-        particles.forEach((particle2, j) => {
-          if (i === j) return;
-          const dx = particle.x - particle2.x;
-          const dy = particle.y - particle2.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-
-          if (distance < 100) {
-            ctx.beginPath();
-            ctx.strokeStyle = `rgba(74, 144, 226, ${0.2 * (1 - distance / 100)})`;
-            ctx.lineWidth = 0.5;
-            ctx.moveTo(particle.x, particle.y);
-            ctx.lineTo(particle2.x, particle2.y);
-            ctx.stroke();
-          }
-        });
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(74, 144, 226, 0.3)';
+        ctx.fill();
       });
-    };
 
-    resizeCanvas();
-    createParticles();
-
-    let animationFrameId: number;
-    const animate = () => {
-      drawParticles();
       animationFrameId = requestAnimationFrame(animate);
     };
+
+    // Initial setup
+    resizeCanvas();
     animate();
 
-    window.addEventListener('resize', () => {
-      resizeCanvas();
-      createParticles();
-    });
+    // Add event listener for window resize
+    window.addEventListener('resize', resizeCanvas);
 
+    // Cleanup function
     return () => {
-      cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', resizeCanvas);
+      cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, []); // Empty dependency array since we don't need to re-run this effect
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>

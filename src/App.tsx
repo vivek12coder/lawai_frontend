@@ -3,6 +3,7 @@ import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './components/Home';
 import LegalQA from './components/LegalQA';
+import ErrorBoundary from './components/ErrorBoundary';
 import { Box, Container, Typography, AppBar, Toolbar } from '@mui/material';
 import BalanceIcon from '@mui/icons-material/Balance';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
@@ -67,16 +68,18 @@ const theme = createTheme({
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/chat" element={<LegalQA />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Router>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Router>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/chat" element={<LegalQA />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Router>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 

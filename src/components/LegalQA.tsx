@@ -46,7 +46,10 @@ const LegalQA: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim()) {
+      setError('Please enter a question');
+      return;
+    }
 
     const userMessage: Message = {
       text: input,
@@ -61,17 +64,23 @@ const LegalQA: React.FC = () => {
     setShowConfidence(false);
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
       const response = await fetch(`${config.apiUrl}/legal-qa`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ question: input }),
+        signal: controller.signal
       });
 
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.detail || `Error: ${response.statusText}`);
+        const errorData = await response.json().catch(() => ({ detail: response.statusText }));
+        throw new Error(errorData?.detail || `Server error: ${response.status}`);
       }
 
       const data = await response.json();
@@ -84,13 +93,19 @@ const LegalQA: React.FC = () => {
         text: data.answer,
         isAi: true,
         timestamp: new Date(),
-        confidence: data.confidence,
+        confidence: data.confidence || 0,
       };
 
       setMessages(prev => [...prev, aiMessage]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch answer. Please try again later.');
-      console.error('Error fetching answer:', err);
+      const errorMessage = err instanceof Error 
+        ? (err.name === 'AbortError' 
+            ? 'Request timed out. Please try again.' 
+            : err.message)
+        : 'An unexpected error occurred. Please try again.';
+      
+      setError(errorMessage);
+      console.error('Error in legal QA:', err);
     } finally {
       setLoading(false);
     }
