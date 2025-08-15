@@ -84,10 +84,6 @@ const Navbar: React.FC = () => {
               alignItems: 'center', 
               cursor: 'pointer',
               gap: 1,
-              transition: 'transform 0.3s ease',
-              '&:hover': {
-                transform: 'scale(1.05)',
-              },
             }}
             onClick={() => navigate('/')}
           >
@@ -95,7 +91,6 @@ const Navbar: React.FC = () => {
               sx={{ 
                 fontSize: 32, 
                 color: theme.palette.primary.main,
-                filter: 'drop-shadow(0 0 8px rgba(74,144,226,0.3))',
               }} 
             />
             <Typography
@@ -106,7 +101,6 @@ const Navbar: React.FC = () => {
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                textShadow: '0 0 30px rgba(74,144,226,0.3)',
               }}
             >
               Legal AI
@@ -125,29 +119,31 @@ const Navbar: React.FC = () => {
                     px: 3,
                     py: 1,
                     borderRadius: 2,
+                    boxSizing: 'border-box',
+                    border: '1px solid transparent', // reserve space to avoid shift
+                    lineHeight: 1.25,
                     position: 'relative',
-                    overflow: 'hidden',
+                    overflow: 'visible',
+                    boxShadow: 'none',
+                    textShadow: 'none',
+                    filter: 'none',
+                    transition: 'none',
                     backgroundColor: location.pathname === item.path || 
                       (location.pathname === '/' && item.path.includes(location.hash)) 
                         ? 'rgba(255,255,255,0.1)' 
                         : 'transparent',
                     '&:hover': {
                       backgroundColor: 'rgba(255,255,255,0.1)',
-                      '&::after': {
-                        transform: 'scaleX(1)',
-                      },
+                      boxShadow: 'none',
+                      filter: 'none',
+                      transform: 'none',
+                      borderColor: 'transparent',
+                      padding: undefined, // ensure no change
+                      margin: undefined,
                     },
-                    '&::after': {
-                      content: '""',
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      width: '100%',
-                      height: '2px',
-                      backgroundColor: theme.palette.primary.main,
-                      transform: 'scaleX(0)',
-                      transformOrigin: 'right',
-                      transition: 'transform 0.3s ease',
+                    '&:focus,&.Mui-focusVisible': {
+                      outline: 'none',
+                      boxShadow: 'none',
                     },
                   }}
                 >
@@ -164,12 +160,7 @@ const Navbar: React.FC = () => {
                 color="inherit"
                 edge="end"
                 onClick={handleMenuClick}
-                sx={{
-                  transition: 'transform 0.3s ease',
-                  '&:hover': {
-                    transform: 'scale(1.1)',
-                  },
-                }}
+                sx={{}}
               >
                 <MenuIcon />
               </IconButton>
@@ -193,10 +184,14 @@ const Navbar: React.FC = () => {
                     sx={{
                       color: 'white',
                       minWidth: 150,
-                      transition: 'all 0.3s ease',
+                      boxSizing: 'border-box',
+                      border: '1px solid transparent',
+                      lineHeight: 1.25,
+                      transition: 'none',
                       '&:hover': {
                         backgroundColor: 'rgba(255,255,255,0.1)',
-                        transform: 'translateX(5px)',
+                        transform: 'none',
+                        borderColor: 'transparent',
                       },
                     }}
                   >

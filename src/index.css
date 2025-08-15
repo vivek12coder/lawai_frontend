@@ -7,6 +7,37 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* --- Remove glow/transform inside the top navbar --- */
+.MuiAppBar-root .MuiButton-root,
+.MuiAppBar-root .MuiButtonBase-root,
+.MuiAppBar-root .MuiIconButton-root {
+  box-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+  z-index: auto !important;
+}
+.MuiAppBar-root .MuiButton-root:hover,
+.MuiAppBar-root .MuiButtonBase-root:hover,
+.MuiAppBar-root .MuiIconButton-root:hover {
+  box-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+  z-index: auto !important;
+}
+/* Cancel z-index lift from :has() within AppBar */
+.MuiAppBar-root .MuiButtonBase-root:has(:hover) {
+  z-index: auto !important;
+}
+
+/* Also lift when any child inside is hovered (covers nested structures) */
+.MuiPaper-root:has(:hover),
+.MuiButtonBase-root:has(:hover) {
+  position: relative;
+  z-index: 9999;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -17,4 +48,48 @@ code {
   width: 100%;
   height: 100%;
   overflow: hidden;
+}
+
+/* =============================
+   Global Hover/Blur Enhancements
+   ============================= */
+
+/* Smooth transitions for all MUI buttons and papers (cards) */
+.MuiButton-root,
+.MuiPaper-root {
+  transition: transform 220ms ease, box-shadow 220ms ease, filter 220ms ease,
+    background-color 220ms ease, border-color 220ms ease;
+}
+
+/* Glow effect on hover */
+.MuiButton-root:hover,
+.MuiPaper-root:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 2px rgba(90, 160, 255, 0.25),
+    0 10px 24px rgba(74, 144, 226, 0.35),
+    0 0 30px rgba(230, 179, 74, 0.15);
+  position: relative;
+  z-index: 9999; /* ensure hovered element stays above the blur overlay */
+}
+
+/* Full-screen blur overlay, toggled via body.hover-blur-active */
+.background-blur-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transition: opacity 200ms ease;
+  z-index: 1; /* above background canvases, below hovered content */
+}
+
+body.hover-blur-active .background-blur-overlay {
+  opacity: 1;
+}
+
+/* Progressive enhancement: when supported, toggle blur overlay via CSS only */
+body:has(.MuiButton-root:hover, .MuiPaper-root:hover) .background-blur-overlay {
+  opacity: 1;
 }

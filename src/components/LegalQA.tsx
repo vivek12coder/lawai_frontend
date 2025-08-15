@@ -145,7 +145,8 @@ const LegalQA: React.FC = () => {
         height: '100vh', 
         display: 'flex', 
         flexDirection: 'column',
-        background: 'linear-gradient(180deg, rgba(255,153,51,0.08) 0%, rgba(255,255,255,0.05) 50%, rgba(19,136,8,0.08) 100%)'
+        // Use global body gradient from theme; keep container transparent
+        background: 'transparent'
       }}
     >
       {/* Header with Back Button */}
@@ -154,10 +155,10 @@ const LegalQA: React.FC = () => {
         display: 'flex', 
         alignItems: 'center',
         gap: 2,
-        borderBottom: '1px solid rgba(10,61,145,0.25)',
+        borderBottom: `1px solid ${theme.palette.divider}`,
         position: 'sticky',
         top: 0,
-        background: 'linear-gradient(90deg, rgba(255,153,51,0.25) 0%, rgba(255,255,255,0.35) 50%, rgba(19,136,8,0.25) 100%)',
+        background: 'rgba(13,36,64,0.5)',
         backdropFilter: 'blur(8px)',
         zIndex: 1000,
       }}>
@@ -165,7 +166,7 @@ const LegalQA: React.FC = () => {
           <IconButton 
             onClick={() => navigate('/')}
             sx={{ 
-              color: '#0a3d91',
+              color: theme.palette.primary.main,
               '&:hover': {
                 backgroundColor: 'rgba(74,144,226,0.1)',
               }
@@ -174,11 +175,11 @@ const LegalQA: React.FC = () => {
             <ArrowBackIcon />
           </IconButton>
         </Tooltip>
-        <GavelIcon sx={{ color: '#0a3d91', fontSize: 28 }} />
+        <GavelIcon sx={{ color: theme.palette.primary.main, fontSize: 28 }} />
         <Typography
           variant="h6"
           sx={{
-            color: '#0a3d91',
+            color: theme.palette.primary.main,
             fontWeight: 'bold',
           }}
         >
@@ -289,8 +290,8 @@ const LegalQA: React.FC = () => {
           onSubmit={handleSubmit}
         sx={{
           p: 2,
-          background: 'linear-gradient(90deg, rgba(255,153,51,0.06) 0%, rgba(255,255,255,0.06) 50%, rgba(19,136,8,0.06) 100%)',
-          borderTop: '1px solid rgba(10,61,145,0.15)',
+          background: 'transparent',
+          borderTop: `1px solid ${theme.palette.divider}`,
           display: 'flex',
           gap: 2,
         }}
@@ -305,13 +306,13 @@ const LegalQA: React.FC = () => {
           sx={{
             '& .MuiOutlinedInput-root': {
               '& fieldset': {
-                borderColor: 'rgba(10,61,145,0.2)',
+                borderColor: theme.palette.divider,
               },
               '&:hover fieldset': {
-                borderColor: '#0a3d91',
+                borderColor: theme.palette.primary.main,
               },
               '&.Mui-focused fieldset': {
-                borderColor: '#0a3d91',
+                borderColor: theme.palette.primary.main,
               }
             },
           }}
@@ -325,18 +326,8 @@ const LegalQA: React.FC = () => {
           sx={{
             px: 3,
             borderRadius: 2,
-            background: 'linear-gradient(90deg, #FF9933 0%, #138808 100%)',
-            color: '#0a3d91',
-            fontWeight: 700,
+            // Use theme's contained primary defaults
             textTransform: 'none',
-            '&:hover': {
-              background: 'linear-gradient(90deg, #e6872c 0%, #0f6e06 100%)',
-              boxShadow: '0 6px 18px rgba(10,61,145,0.25)'
-            },
-            '&.Mui-disabled': {
-              background: 'linear-gradient(90deg, rgba(255,153,51,0.4) 0%, rgba(19,136,8,0.4) 100%)',
-              color: 'rgba(10,61,145,0.6)'
-            }
           }}
         >
           Send

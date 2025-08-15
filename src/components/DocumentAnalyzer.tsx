@@ -11,6 +11,7 @@ import {
 import { styled } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import config from '../config';
+import { useNavigate } from 'react-router-dom';
 
 interface AnalysisResult {
   summary: string;
@@ -34,6 +35,7 @@ const UploadBox = styled(Paper)(({ theme }) => ({
 }));
 
 const DocumentAnalyzer: React.FC = () => {
+  const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState('');
   const [loading, setLoading] = useState(false);
@@ -149,6 +151,22 @@ const DocumentAnalyzer: React.FC = () => {
 
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto', p: 3 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        <Button
+          variant="outlined"
+          color="inherit"
+          onClick={() => {
+            if (window.history.length > 1) {
+              navigate(-1);
+            } else {
+              navigate('/');
+            }
+          }}
+          sx={{ mr: 2 }}
+        >
+          Back
+        </Button>
+      </Box>
       <Typography variant="h4" gutterBottom color="primary">
         Legal Document Analyzer
       </Typography>

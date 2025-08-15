@@ -422,7 +422,8 @@ const Home: React.FC = () => {
           }}
         >
           <Typography variant="body2" color="text.secondary">
-            © {new Date().getFullYear()} Legal AI As All rights reserved.
+            © {new Date().getFullYear()} Legal AI As All rights reserved. <br />
+            Made with ❤️ by Vivek & Team
           </Typography>
         </Box>
       </Box>
