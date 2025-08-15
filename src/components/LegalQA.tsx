@@ -25,6 +25,7 @@ interface Message {
   isAi: boolean;
   timestamp: Date;
   confidence?: number;
+  source?: string;
 }
 
 const LegalQA: React.FC = () => {
@@ -65,23 +66,43 @@ const LegalQA: React.FC = () => {
     setShowConfidence(false);
 
     try {
+      // Create abort controller with increased timeout (45 seconds)
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 45000); // 45 second timeout
 
-      const response = await fetch(`${config.apiUrl}/legal-qa`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ question: input }),
-        signal: controller.signal
-      });
+      // Add retry logic
+      let retries = 2;
+      let response: Response | undefined;
+      let lastError: Error | unknown;
+
+      while (retries >= 0) {
+        try {
+          response = await fetch(`${config.apiUrl}/legal-qa`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ question: input }),
+            signal: controller.signal
+          });
+          break; // If successful, exit the retry loop
+        } catch (err) {
+          lastError = err;
+          if (err instanceof Error && err.name === 'AbortError') {
+            throw err; // Don't retry timeouts
+          }
+          retries--;
+          if (retries < 0) throw err;
+          // Wait before retrying (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, 1000 * (2 ** (2 - retries))));
+        }
+      }
 
       clearTimeout(timeoutId);
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: response.statusText }));
-        throw new Error(errorData?.detail || `Server error: ${response.status}`);
+      if (!response || !response.ok) {
+        const errorData = await response?.json().catch(() => ({ detail: response?.statusText || 'Unknown error' }));
+        throw new Error(errorData?.detail || `Server error: ${response?.status || 'Unknown'}`);
       }
 
       const data = await response.json();
@@ -95,6 +116,7 @@ const LegalQA: React.FC = () => {
         isAi: true,
         timestamp: new Date(),
         confidence: data.confidence || 0,
+        source: data.source || 'local'
       };
 
       setMessages(prev => [...prev, aiMessage]);
@@ -324,4 +346,4 @@ const LegalQA: React.FC = () => {
   );
 };
 
-export default LegalQA; 
+export default LegalQA;

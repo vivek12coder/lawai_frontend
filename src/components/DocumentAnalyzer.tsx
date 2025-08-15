@@ -76,21 +76,64 @@ const DocumentAnalyzer: React.FC = () => {
 
     try {
       console.log('Sending request to:', `${config.apiUrl}/api/analyze-document`);
-      const response = await fetch(`${config.apiUrl}/api/analyze-document`, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Accept': 'application/json',
-        },
-        // Don't include credentials to avoid CORS preflight issues
-        credentials: 'omit',
-      });
+      
+      // Create abort controller with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout for file uploads
+      
+      // Add retry logic
+      let retries = 2;
+      let response;
+      let lastError;
 
-      if (!response.ok) {
-        console.error('Error analyzing document:', response.status, response.statusText);
-        const errorText = await response.text().catch(e => 'Could not read error response');
-        console.error('Error response body:', errorText);
-        setError(`Failed to analyze document: ${response.status} ${response.statusText}`);
+      while (retries >= 0) {
+        try {
+          response = await fetch(`${config.apiUrl}/api/analyze-document`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'Accept': 'application/json',
+            },
+            // Don't include credentials to avoid CORS preflight issues
+            credentials: 'omit',
+            signal: controller.signal
+          });
+          break; // If successful, exit the retry loop
+        } catch (err) {
+          lastError = err;
+          if (err instanceof Error && err.name === 'AbortError') {
+            throw new Error('Request timed out. The server took too long to respond. Please try again with a smaller file.');
+          }
+          retries--;
+          if (retries < 0) throw err;
+          // Wait before retrying (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, 2000 * (2 ** (2 - retries))));
+        }
+      }
+
+      clearTimeout(timeoutId);
+
+      if (!response || !response.ok) {
+        console.error('Error analyzing document:', response?.status, response?.statusText);
+        let errorMessage = `Failed to analyze document: ${response?.status || 'Unknown'} ${response?.statusText || ''}`;
+        
+        try {
+          const errorData = await response?.json();
+          if (errorData?.detail) {
+            errorMessage = errorData.detail;
+          }
+        } catch (e) {
+          // If we can't parse JSON, try to get text
+          try {
+            const errorText = await response?.text();
+            if (errorText) errorMessage += ` - ${errorText}`;
+          } catch (textError) {
+            // Ignore text parsing errors
+          }
+        }
+        
+        console.error('Error details:', errorMessage);
+        setError(errorMessage);
         setLoading(false);
         return;
       }
