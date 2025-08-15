@@ -75,13 +75,24 @@ const DocumentAnalyzer: React.FC = () => {
     formData.append('title', title);
 
     try {
+      console.log('Sending request to:', `${config.apiUrl}/api/analyze-document`);
       const response = await fetch(`${config.apiUrl}/api/analyze-document`, {
         method: 'POST',
         body: formData,
+        headers: {
+          'Accept': 'application/json',
+        },
+        // Don't include credentials to avoid CORS preflight issues
+        credentials: 'omit',
       });
 
       if (!response.ok) {
-        throw new Error('Failed to analyze document');
+        console.error('Error analyzing document:', response.status, response.statusText);
+        const errorText = await response.text().catch(e => 'Could not read error response');
+        console.error('Error response body:', errorText);
+        setError(`Failed to analyze document: ${response.status} ${response.statusText}`);
+        setLoading(false);
+        return;
       }
 
       const data = await response.json();

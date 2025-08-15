@@ -3,6 +3,7 @@ import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './components/Home';
 import LegalQA from './components/LegalQA';
+import DocumentAnalyzer from './components/DocumentAnalyzer';
 import ErrorBoundary from './components/ErrorBoundary';
 import { Box, Container, Typography, AppBar, Toolbar } from '@mui/material';
 import BalanceIcon from '@mui/icons-material/Balance';
@@ -75,6 +76,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/chat" element={<LegalQA />} />
+            <Route path="/document-analyzer" element={<DocumentAnalyzer />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Router>

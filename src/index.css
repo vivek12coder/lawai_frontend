@@ -11,3 +11,10 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Three.js grid distortion background container */
+.distortion-container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}

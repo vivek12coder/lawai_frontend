@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Paper, Typography, Avatar } from '@mui/material';
+
 import { useTheme } from '@mui/material/styles';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import PersonIcon from '@mui/icons-material/Person';
@@ -47,7 +48,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       {/* Avatar */}
       <Avatar
         sx={{
-          bgcolor: isAi ? 'primary.main' : 'secondary.main',
+          bgcolor: isAi ? '#138808' : '#FF9933',
+          color: '#0a192f',
           width: 40,
           height: 40,
         }}
@@ -62,11 +64,11 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
             p: 2,
             borderRadius: 2,
             bgcolor: isAi 
-              ? 'rgba(74,144,226,0.1)' 
-              : 'rgba(230,179,74,0.1)',
+              ? 'rgba(19,136,8,0.08)'
+              : 'rgba(255,153,51,0.12)',
             borderColor: isAi 
-              ? 'primary.main' 
-              : 'secondary.main',
+              ? '#138808'
+              : '#FF9933',
             borderWidth: 1,
             borderStyle: 'solid',
             position: 'relative',
@@ -77,7 +79,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
               [isAi ? 'left' : 'right']: -10,
               borderStyle: 'solid',
               borderWidth: '10px 10px 10px 0',
-              borderColor: `transparent ${isAi ? theme.palette.primary.main : theme.palette.secondary.main} transparent transparent`,
+              borderColor: `transparent ${isAi ? '#138808' : '#FF9933'} transparent transparent`,
               transform: isAi ? 'none' : 'scaleX(-1)',
             },
           }}

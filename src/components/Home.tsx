@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { 
   Box, 
   Container, 
@@ -17,11 +17,12 @@ import SpeedIcon from '@mui/icons-material/Speed';
 import ChatIcon from '@mui/icons-material/Chat';
 import BalanceIcon from '@mui/icons-material/Balance';
 import Navbar from './Navbar';
+import Squares from './Squares';
+import config from '../config';
 
 const Home: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const features = [
     {
@@ -46,91 +47,15 @@ const Home: React.FC = () => {
     }
   ];
 
-  // Particle animation effect
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let animationFrameId: number;
-    let particles: Array<{
-      x: number;
-      y: number;
-      dx: number;
-      dy: number;
-      size: number;
-    }> = [];
-
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      createParticles(); // Recreate particles when canvas is resized
-    };
-
-    const createParticles = () => {
-      particles = [];
-      const numberOfParticles = Math.min(
-        Math.floor((canvas.width * canvas.height) / 15000),
-        100 // Cap maximum particles
-      );
-      
-      for (let i = 0; i < numberOfParticles; i++) {
-        particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          dx: (Math.random() - 0.5) * 0.5,
-          dy: (Math.random() - 0.5) * 0.5,
-          size: Math.random() * 2,
-        });
-      }
-    };
-
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      particles.forEach(particle => {
-        particle.x += particle.dx;
-        particle.y += particle.dy;
-
-        // Wrap particles around screen edges
-        if (particle.x < 0) particle.x = canvas.width;
-        if (particle.x > canvas.width) particle.x = 0;
-        if (particle.y < 0) particle.y = canvas.height;
-        if (particle.y > canvas.height) particle.y = 0;
-
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(74, 144, 226, 0.3)';
-        ctx.fill();
-      });
-
-      animationFrameId = requestAnimationFrame(animate);
-    };
-
-    // Initial setup
-    resizeCanvas();
-    animate();
-
-    // Add event listener for window resize
-    window.addEventListener('resize', resizeCanvas);
-
-    // Cleanup function
-    return () => {
-      window.removeEventListener('resize', resizeCanvas);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, []); // Empty dependency array since we don't need to re-run this effect
+  // Background handled by GridDistortion (Three.js)
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
       <Navbar />
       
-      {/* Background Canvas */}
-      <canvas
-        ref={canvasRef}
-        style={{
+      {/* Background - Three.js Grid Distortion */}
+      <Box
+        sx={{
           position: 'fixed',
           top: 0,
           left: 0,
@@ -139,7 +64,29 @@ const Home: React.FC = () => {
           zIndex: 0,
           background: 'linear-gradient(135deg, #0a192f 0%, #0d2440 100%)',
         }}
-      />
+      >
+        <Squares 
+          speed={0.5} 
+          squareSize={40}
+          direction='diagonal'
+          borderColor='#fff'
+          hoverFillColor='#222'
+        />
+        {/* Blur + dark overlay to soften background and improve card readability */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backdropFilter: 'blur(6px)',
+            WebkitBackdropFilter: 'blur(6px)',
+            backgroundColor: 'rgba(0,0,0,0.25)',
+            pointerEvents: 'none',
+          }}
+        />
+      </Box>
 
       {/* Main Content */}
       <Box
@@ -475,7 +422,7 @@ const Home: React.FC = () => {
           }}
         >
           <Typography variant="body2" color="text.secondary">
-            © {new Date().getFullYear()} Legal AI Assistant. All rights reserved.
+            © {new Date().getFullYear()} Legal AI As All rights reserved.
           </Typography>
         </Box>
       </Box>

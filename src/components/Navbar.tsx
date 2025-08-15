@@ -35,6 +35,7 @@ const Navbar: React.FC = () => {
     { label: 'Features', path: '/#features' },
     { label: 'About', path: '/#about' },
     { label: 'Chat', path: '/chat' },
+    { label: 'Document Analyzer', path: '/document-analyzer' },
   ];
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -211,4 +212,4 @@ const Navbar: React.FC = () => {
   );
 };
 
-export default Navbar; 
+export default Navbar;

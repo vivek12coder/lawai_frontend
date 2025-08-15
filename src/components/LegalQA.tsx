@@ -9,6 +9,7 @@ import {
   Typography,
   useTheme,
   Tooltip,
+  Button,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import SendIcon from '@mui/icons-material/Send';
@@ -116,17 +117,25 @@ const LegalQA: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <Container 
+      maxWidth="md" 
+      sx={{ 
+        height: '100vh', 
+        display: 'flex', 
+        flexDirection: 'column',
+        background: 'linear-gradient(180deg, rgba(255,153,51,0.08) 0%, rgba(255,255,255,0.05) 50%, rgba(19,136,8,0.08) 100%)'
+      }}
+    >
       {/* Header with Back Button */}
       <Box sx={{ 
         py: 2, 
         display: 'flex', 
         alignItems: 'center',
         gap: 2,
-        borderBottom: '1px solid rgba(255,255,255,0.1)',
+        borderBottom: '1px solid rgba(10,61,145,0.25)',
         position: 'sticky',
         top: 0,
-        backgroundColor: 'rgba(10, 25, 41, 0.8)',
+        background: 'linear-gradient(90deg, rgba(255,153,51,0.25) 0%, rgba(255,255,255,0.35) 50%, rgba(19,136,8,0.25) 100%)',
         backdropFilter: 'blur(8px)',
         zIndex: 1000,
       }}>
@@ -134,7 +143,7 @@ const LegalQA: React.FC = () => {
           <IconButton 
             onClick={() => navigate('/')}
             sx={{ 
-              color: theme.palette.primary.main,
+              color: '#0a3d91',
               '&:hover': {
                 backgroundColor: 'rgba(74,144,226,0.1)',
               }
@@ -143,14 +152,11 @@ const LegalQA: React.FC = () => {
             <ArrowBackIcon />
           </IconButton>
         </Tooltip>
-        <GavelIcon sx={{ color: theme.palette.primary.main, fontSize: 28 }} />
+        <GavelIcon sx={{ color: '#0a3d91', fontSize: 28 }} />
         <Typography
           variant="h6"
           sx={{
-            background: 'linear-gradient(45deg, #4a90e2, #e6b34a)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
+            color: '#0a3d91',
             fontWeight: 'bold',
           }}
         >
@@ -167,7 +173,38 @@ const LegalQA: React.FC = () => {
         display: 'flex',
         flexDirection: 'column',
         gap: 2,
+        position: 'relative'
       }}>
+        {/* Ashoka Chakra watermark */}
+        <Box
+          aria-hidden
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerEvents: 'none',
+            opacity: 0.06,
+            zIndex: 0,
+          }}
+        >
+          <Box component="svg" viewBox="0 0 200 200" sx={{ width: 220, height: 220 }}>
+            <circle cx="100" cy="100" r="70" fill="none" stroke="#0a3d91" strokeWidth="6" />
+            <circle cx="100" cy="100" r="4" fill="#0a3d91" />
+            {Array.from({ length: 24 }).map((_, i) => (
+              <line
+                key={i}
+                x1="100"
+                y1="100"
+                x2={100 + 65 * Math.cos((i * 15 * Math.PI) / 180)}
+                y2={100 + 65 * Math.sin((i * 15 * Math.PI) / 180)}
+                stroke="#0a3d91"
+                strokeWidth="3"
+              />
+            ))}
+          </Box>
+        </Box>
         {messages.length === 0 && (
           <Box 
             sx={{ 
@@ -180,7 +217,7 @@ const LegalQA: React.FC = () => {
               gap: 2,
             }}
           >
-            <GavelIcon sx={{ fontSize: 48, color: theme.palette.primary.main }} />
+            <GavelIcon sx={{ fontSize: 48, color: '#0a3d91' }} />
             <Typography variant="h6" color="text.secondary">
               Ask any legal question about Indian law
             </Typography>
@@ -221,18 +258,17 @@ const LegalQA: React.FC = () => {
             />
           </Box>
         )}
-
         <div ref={messagesEndRef} />
       </Box>
 
-      {/* Input Area */}
-      <Paper 
-        component="form" 
-        onSubmit={handleSubmit}
+        {/* Input Area */}
+        <Paper 
+          component="form" 
+          onSubmit={handleSubmit}
         sx={{
           p: 2,
-          background: 'linear-gradient(135deg, rgba(74,144,226,0.05) 0%, rgba(230,179,74,0.05) 100%)',
-          borderTop: '1px solid rgba(255,255,255,0.1)',
+          background: 'linear-gradient(90deg, rgba(255,153,51,0.06) 0%, rgba(255,255,255,0.06) 50%, rgba(19,136,8,0.06) 100%)',
+          borderTop: '1px solid rgba(10,61,145,0.15)',
           display: 'flex',
           gap: 2,
         }}
@@ -247,29 +283,42 @@ const LegalQA: React.FC = () => {
           sx={{
             '& .MuiOutlinedInput-root': {
               '& fieldset': {
-                borderColor: 'rgba(255,255,255,0.1)',
+                borderColor: 'rgba(10,61,145,0.2)',
               },
               '&:hover fieldset': {
-                borderColor: theme.palette.primary.main,
+                borderColor: '#0a3d91',
               },
+              '&.Mui-focused fieldset': {
+                borderColor: '#0a3d91',
+              }
             },
           }}
         />
-        <IconButton 
-          type="submit" 
-          disabled={loading || !input.trim()} 
-          sx={{ 
-            bgcolor: 'primary.main',
+        <Button
+          variant="contained"
+          disableElevation
+          type="submit"
+          startIcon={<SendIcon />}
+          disabled={loading || !input.trim()}
+          sx={{
+            px: 3,
+            borderRadius: 2,
+            background: 'linear-gradient(90deg, #FF9933 0%, #138808 100%)',
+            color: '#0a3d91',
+            fontWeight: 700,
+            textTransform: 'none',
             '&:hover': {
-              bgcolor: 'primary.dark',
+              background: 'linear-gradient(90deg, #e6872c 0%, #0f6e06 100%)',
+              boxShadow: '0 6px 18px rgba(10,61,145,0.25)'
             },
             '&.Mui-disabled': {
-              bgcolor: 'action.disabledBackground',
-            },
+              background: 'linear-gradient(90deg, rgba(255,153,51,0.4) 0%, rgba(19,136,8,0.4) 100%)',
+              color: 'rgba(10,61,145,0.6)'
+            }
           }}
         >
-          <SendIcon />
-        </IconButton>
+          Send
+        </Button>
       </Paper>
     </Container>
   );
